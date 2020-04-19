@@ -1,5 +1,4 @@
-﻿
-namespace Scylla.SceneManagement.Editor
+﻿namespace Scylla.SceneManagement.Editor
 {
     using Scylla.Editor;
     using System;
@@ -70,7 +69,7 @@ namespace Scylla.SceneManagement.Editor
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
                 EditorGUILayout.Space();
-                EditorGUILayoutUtils.LabelField("Scylla's scene management", TextAnchor.MiddleCenter, FontStyle.Bold);
+                EditorGUILayoutUtils.LabelField("Scylla Scene Management == SceneManager", TextAnchor.MiddleCenter, FontStyle.Bold);
                 EditorGUILayout.Space();
             }
             EditorGUILayout.EndVertical();

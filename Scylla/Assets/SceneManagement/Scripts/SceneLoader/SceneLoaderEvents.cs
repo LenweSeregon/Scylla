@@ -11,11 +11,11 @@
         //============ Events
         //=============================================================================//
         #region Events
-        public static event Action _onLoaderProcessStart = null;
-        public static event Action _onLoaderProcessFinish = null;
-        public static event Action<string, float> _onLoaderProcessUpdate = null;
-        public static event Action<string> _onSceneLoaded = null;
-        public static event Action<string> _onSceneUnloaded = null;
+        private static event Action _onLoaderProcessStart = null;
+        private static event Action _onLoaderProcessFinish = null;
+        private static event Action<string, float> _onLoaderProcessUpdate = null;
+        private static event Action<string> _onSceneLoaded = null;
+        private static event Action<string> _onSceneUnloaded = null;
 
         public static event Action OnLoaderProcessStart
         {

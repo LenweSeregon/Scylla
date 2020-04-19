@@ -255,6 +255,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LeftRightCutPageFader
       objectReference: {fileID: 0}
+    - target: {fileID: 6990442347326822599, guid: b542ecf49f3eaa648841634e25c81c74,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b542ecf49f3eaa648841634e25c81c74, type: 3}
 --- !u!224 &8052290400398168163 stripped

@@ -31,6 +31,17 @@
             EditorGUILayout.LabelField(label, style, options);
         }
         
+        
+        public static void Label(string label, TextAnchor anchor = TextAnchor.MiddleLeft, FontStyle fontStyle = FontStyle.Normal, int fontSize = -1)
+        {
+            var style = new GUIStyle(GUI.skin.label);
+            style.alignment = anchor;
+            style.fontSize = fontSize > 0 ? fontSize : style.fontSize;
+            style.fontStyle = fontStyle;
+            
+            GUILayout.Label(label, style);
+        }
+        
         public static void LabelField(string label, TextAnchor anchor = TextAnchor.MiddleLeft, FontStyle fontStyle = FontStyle.Normal, int fontSize = -1)
         {
             var style = new GUIStyle(GUI.skin.label);

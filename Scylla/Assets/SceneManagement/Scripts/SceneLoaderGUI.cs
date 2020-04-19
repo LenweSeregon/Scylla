@@ -25,7 +25,7 @@ namespace Scylla
             if (Scylla.SceneManagement.SceneManager.Instance.SceneLoaderProxy.Fader != null)
             {
                 Scylla.SceneManagement.SceneManager.Instance.SceneLoaderProxy.OnFadeInCompletedProcessStart += OnProxyFadeInCompletedProcessStart;
-                Scylla.SceneManagement.SceneManager.Instance.SceneLoaderProxy._onFadeInCompletedProcessFinish += OnProxyFadeInCompletedProcessFinish;
+                Scylla.SceneManagement.SceneManager.Instance.SceneLoaderProxy.OnFadeInCompletedProcessFinish += OnProxyFadeInCompletedProcessFinish;
             }
             else
             {
@@ -39,7 +39,7 @@ namespace Scylla
         private void OnDestroy()
         {
             Scylla.SceneManagement.SceneManager.Instance.SceneLoaderProxy.OnFadeInCompletedProcessStart -= OnProxyFadeInCompletedProcessStart;
-            Scylla.SceneManagement.SceneManager.Instance.SceneLoaderProxy._onFadeInCompletedProcessFinish -= OnProxyFadeInCompletedProcessFinish;
+            Scylla.SceneManagement.SceneManager.Instance.SceneLoaderProxy.OnFadeInCompletedProcessFinish -= OnProxyFadeInCompletedProcessFinish;
             
             Scylla.SceneManagement.SceneLoaderEvents.OnLoaderProcessStart -= OnLoaderProcessStart;
             Scylla.SceneManagement.SceneLoaderEvents.OnLoaderProcessFinish -= OnLoaderProcessFinish;

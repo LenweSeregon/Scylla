@@ -12,9 +12,8 @@
         //============ Events & Delegates
         //=============================================================================//
         #region Events & Delegates
-        
-        public event Action _onFadeInCompletedProcessStart = null;
-        public event Action _onFadeInCompletedProcessFinish = null;
+        private event Action _onFadeInCompletedProcessStart = null;
+        private event Action _onFadeInCompletedProcessFinish = null;
         
         public event Action OnFadeInCompletedProcessStart
         {
@@ -64,6 +63,7 @@
         //============ Internal Fields
         //=============================================================================//
         #region Internal Fields
+        private bool _processLoaderFinish;
         private bool _isFading;
         private Queue<InternalSceneRequest> _builtRequestsForLoader;
         private SceneLoaderRequest _currentRequest;
@@ -81,7 +81,9 @@
             if (_fader != null)
             {
                 _fader.OnFadeInCompleted -= FadeInCompletedProcessStart;
+                _fader.OnFadeInCompleted -= FadeInCompletedProcessFinish;
                 _fader.OnFadeOutCompleted -= FadeOutCompletedProcessStart;
+                _fader.OnFadeOutCompleted -= FadeOutCompletedProcessFinish;
             }
 
             SceneLoaderEvents.OnLoaderProcessFinish -= OnLoaderProcessFinish;
@@ -89,6 +91,7 @@
         
         private void Awake()
         {
+            _processLoaderFinish = false;
             _builtRequestsForLoader = null;
             _isFading = false;
             _currentRequest = null;
@@ -106,6 +109,17 @@
 
         private void Update()
         {
+            if (_processLoaderFinish && _isFading == false)
+            {
+                _processLoaderFinish = false;
+                if (_fader != null)
+                {
+                    _isFading = true;
+                    _fader.OnFadeInCompleted += FadeInCompletedProcessFinish;
+                    _fader.FadeIn();
+                }
+            }
+            
             if (_currentRequest == null && _requests.Count > 0 && _sceneLoader.IsBusy == false)
             {
                 _currentRequest = _requests.Dequeue();
@@ -143,12 +157,7 @@
 
         private void OnLoaderProcessFinish()
         {
-            if (_fader != null)
-            {
-                _isFading = true;
-                _fader.OnFadeInCompleted += FadeInCompletedProcessFinish;
-                _fader.FadeIn();
-            }
+            _processLoaderFinish = true;
         }
 
         private void FadeInCompletedProcessFinish()

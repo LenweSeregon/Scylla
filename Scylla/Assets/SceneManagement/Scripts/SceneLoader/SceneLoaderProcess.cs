@@ -31,8 +31,10 @@
         {
             get
             {
-                float smooth = _currentProcessTimer / _minimumProcessTime;
-                return (smooth > RoughProgress) ? (RoughProgress) : (smooth);
+                float smooth = (_minimumProcessTime > 0) ? (_currentProcessTimer / _minimumProcessTime) : (_currentProcessTimer);
+                float value = (smooth > RoughProgress) ? (RoughProgress) : (smooth);
+                float clamped = Mathf.Clamp01(value);
+                return clamped;
             }
         }
         #endregion
