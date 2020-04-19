@@ -43,7 +43,7 @@ SceneLevel2
 -  **Suppressible** : Finalement, il est possible de définir si notre scène est suppressible ou non. Lorsqu'une scène n'est pas suppressible
 et qu'un utilisateur tente de la supprimer sans forcer, la requête est rejetée.
 
-![InternalSceneData fields](./Images/SceneDataInternalFields.png)
+![InternalSceneData fields](./Images/SceneDataInternalFields.PNG)
 
 Il reste le bool pour savoir si une scène est considérée comme la scène principale (la scène contenant le SceneManager).
 Cette donnée est utilisée en interne pour s'assurer qu'on ne détruit pas la scène principale.
