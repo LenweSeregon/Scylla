@@ -1,4 +1,5 @@
 #Scene management
+
 Scylla permet de gérer simplement la transition de scène via le module "SceneManagement".
 
 Attention, cette documentation ne présentera pas le fonctionnement des méthodes des différents classes mais présente plus 
