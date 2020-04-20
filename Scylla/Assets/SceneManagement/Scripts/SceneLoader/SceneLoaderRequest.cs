@@ -9,9 +9,9 @@ namespace Scylla.SceneManagement
     public abstract class SceneLoaderRequest
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         protected SceneLoaderProxy.SceneLoaderRequestCallback _callback;
         protected bool _forceNotSuppressible;
         #endregion
@@ -27,7 +27,7 @@ namespace Scylla.SceneManagement
         //============ Lifecycle Methods
         //=============================================================================//
         #region Lifecycle Methods
-        public SceneLoaderRequest(SceneLoaderProxy.SceneLoaderRequestCallback callback, bool forceNotSuppressible)
+        protected SceneLoaderRequest(SceneLoaderProxy.SceneLoaderRequestCallback callback, bool forceNotSuppressible)
         {
             _callback = callback;
             _forceNotSuppressible = forceNotSuppressible;

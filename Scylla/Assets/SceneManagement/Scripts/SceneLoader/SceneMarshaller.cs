@@ -6,18 +6,21 @@
 
     internal class SceneMarshaller : IMarshaller<InternalSceneData, SceneData>
     {
-        
         //=============================================================================//
         //============ Lifecycle Methods
         //=============================================================================//
+        #region Lifecycle Methods
         public SceneMarshaller()
         {
             
         }
+        #endregion
         
         //=============================================================================//
         //============ Public Methods
         //=============================================================================//
+        #region Public Methods
+        
         public InternalSceneData Marshall(SceneData entry)
         {
             if (entry == null)
@@ -36,5 +39,7 @@
             sceneData.FeedBundleIdentifier(entry.BundleIdentifier);
             return sceneData;
         }
+        
+        #endregion
     }
 }

@@ -17,9 +17,9 @@
         #endregion
         
         //=============================================================================//
-        //============ Public Methods
+        //============ Internal Methods
         //=============================================================================//
-        #region Public Methods
+        #region Internal Methods
         internal override Queue<InternalSceneRequest> CreateRequests(SceneCollection collection, bool forceNotSuppressible)
         {
             return new Queue<InternalSceneRequest>();

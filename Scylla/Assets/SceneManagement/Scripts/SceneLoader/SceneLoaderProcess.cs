@@ -7,9 +7,9 @@
     internal class SceneLoaderProcess
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private SceneLoader _sceneLoader;
         private float _minimumProcessTime;
         private Queue<InternalSceneRequest> _requests;
@@ -54,9 +54,9 @@
         #endregion
 
         //=============================================================================//
-        //============ Private Methods
+        //============ Private / Protected Methods
         //=============================================================================//
-        #region Private Methods
+        #region Private / Protected Methods
         private bool IsLastRequest()
         {
             return _requests.Count == 0;

@@ -7,9 +7,9 @@
     public class UnloadStrategyBundle : UnloadStrategy
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private string _bundleIdentifier;
         private bool _includeMains;
         #endregion
@@ -26,12 +26,12 @@
         #endregion
         
         //=============================================================================//
-        //============ Public Methods
+        //============ Internal Methods
         //=============================================================================//
-        #region Public Methods
+        #region Internal Methods
         internal override Queue<InternalSceneRequest> CreateRequests(SceneCollection collection, bool forceNotSuppressible)
         {
-            if (Inspection(collection, forceNotSuppressible)._isSuccess == false)
+            if (Inspection(collection, forceNotSuppressible).IsSuccess == false)
             {
                 Debug.LogError("Development error -- Contact developer -- Initial inspection went wrong, this request should have been denied");
                 return null;

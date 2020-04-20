@@ -53,16 +53,9 @@
         #endregion
         
         //=============================================================================//
-        //============ Properties
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Properties
-        public Fader Fader => _fader;
-        #endregion
-        
-        //=============================================================================//
-        //============ Internal Fields
-        //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private bool _processLoaderFinish;
         private bool _isFading;
         private Queue<InternalSceneRequest> _builtRequestsForLoader;
@@ -71,6 +64,13 @@
         private SceneMarshaller _marshaller;
         #endregion
         
+        //=============================================================================//
+        //============ Properties
+        //=============================================================================//
+        #region Properties
+        public Fader Fader => _fader;
+        #endregion
+
         //=============================================================================//
         //============ Lifecycle Methods
         //=============================================================================//
@@ -124,8 +124,8 @@
             {
                 _currentRequest = _requests.Dequeue();
                 SceneLoaderRequestResult inspectionResult = _currentRequest.Inspection(_sceneLoader.Collection);
-                _currentRequest.Callback?.Invoke(inspectionResult._isSuccess);
-                if (inspectionResult._isSuccess)
+                _currentRequest.Callback?.Invoke(inspectionResult.IsSuccess);
+                if (inspectionResult.IsSuccess)
                 {
                     Queue<InternalSceneRequest> requests = _currentRequest.BuildRequests(_sceneLoader.Collection);
                     if (requests != null && requests.Count > 0)
@@ -151,9 +151,9 @@
         #endregion
         
         //=============================================================================//
-        //============ Private Methods
+        //============ Private / Protected Methods
         //=============================================================================//
-        #region Private Methods
+        #region Private / Protected Methods
 
         private void OnLoaderProcessFinish()
         {
@@ -202,7 +202,7 @@
         //=============================================================================//
         //============ Public Methods
         //=============================================================================//
-
+        #region Public Methods
         public void PostRequest(SceneLoaderRequest loadRequest)
         {
             AttemptClearOlderRequests();
@@ -246,5 +246,6 @@
             List<string> bundleIdentifiers = _sceneLoader.Collection.GetAllBundleIdentifiers();
             return bundleIdentifiers;
         }
+        #endregion
     }
 }

@@ -1,6 +1,4 @@
-﻿using Scylla.SceneManagement;
-
-namespace Scylla
+﻿namespace Scylla.SceneManagement
 {
     using System;
     using System.Collections;
@@ -9,12 +7,17 @@ namespace Scylla
 
     public abstract class SceneLoaderGUI : MonoBehaviour
     {
+        //=============================================================================//
+        //============ Serialized Fields
+        //=============================================================================//
         #region SerializedFields
         [SerializeField] private Transform _guiContainer;
         #endregion
         
-        #region Methods
-
+        //=============================================================================//
+        //============ Lifecycle Methods
+        //=============================================================================//.
+        #region Lifecycle Methods
         private void Awake()
         {
             _guiContainer.gameObject.SetActive(false);
@@ -45,7 +48,13 @@ namespace Scylla
             Scylla.SceneManagement.SceneLoaderEvents.OnLoaderProcessFinish -= OnLoaderProcessFinish;
             Scylla.SceneManagement.SceneLoaderEvents.OnLoaderProcessUpdate -= OnLoaderProcessUpdate;
         }
-
+        #endregion
+        
+        //=============================================================================//
+        //============ Private / Protected Methods
+        //=============================================================================//
+        #region Private / Protected Methods
+        
         protected virtual void OnProxyFadeInCompletedProcessStart()
         {
             _guiContainer.gameObject.SetActive(true);

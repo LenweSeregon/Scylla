@@ -7,18 +7,18 @@
 
     public class SceneManager : Singleton<SceneManager>
     {
+        //=============================================================================//
+        //============ Serialized Fields
+        //=============================================================================//
         #region Serialized Fields
         [SerializeField] private SceneLoaderProxy _sceneLoaderProxy = null;
         #endregion
 
+        //=============================================================================//
+        //============ Properties
+        //=============================================================================//
         #region Properties
-
         public SceneLoaderProxy SceneLoaderProxy => _sceneLoaderProxy;
-
-        #endregion
-
-        #region Methods
-
         #endregion
     }
 }

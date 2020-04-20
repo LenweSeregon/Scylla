@@ -10,9 +10,9 @@
     internal abstract class InternalSceneRequest
     { 
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         protected readonly InternalSceneData _sceneData;
         #endregion
         

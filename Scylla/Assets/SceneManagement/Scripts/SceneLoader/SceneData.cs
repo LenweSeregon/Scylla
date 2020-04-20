@@ -7,9 +7,9 @@
     public class SceneData
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private string _sceneName;
         private bool _isSuppressible;
         private bool _isMarked;

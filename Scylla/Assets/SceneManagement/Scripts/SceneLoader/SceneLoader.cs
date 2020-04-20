@@ -39,9 +39,9 @@
         #endregion
         
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private SceneLoaderProcess _currentProcess;
         private SceneCollection _collection;
         #endregion

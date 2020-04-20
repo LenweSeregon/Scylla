@@ -10,9 +10,9 @@ namespace Scylla.SceneManagement
     internal class SceneCollection
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private List<InternalSceneData> _scenes;
         private List<int> _freedBundleIdentifiersInteger;
         private int _maxBundleIdentifierInteger;
@@ -53,10 +53,7 @@ namespace Scylla.SceneManagement
         }
 
         #endregion
-
-
         
-                
         //=============================================================================//
         //============ Private / Protected Methods
         //=============================================================================//

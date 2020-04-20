@@ -10,9 +10,9 @@ namespace Scylla.SceneManagement
     public class SceneLoaderRequestUnload : SceneLoaderRequest
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private UnloadStrategy _unloadStrategy;
         #endregion
         
@@ -43,7 +43,7 @@ namespace Scylla.SceneManagement
         {
             // Beforehand, we check once again that the request is valid
             // If it's not, this is a development error, warn user and return
-            if (Inspection(collection)._isSuccess == false)
+            if (Inspection(collection).IsSuccess == false)
             {
                 Debug.LogError("Development error -- Contact developer -- Initial inspection went wrong, this request should have been denied");
                 return null;

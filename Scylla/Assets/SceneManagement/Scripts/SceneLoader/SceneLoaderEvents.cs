@@ -8,9 +8,9 @@
     public static class SceneLoaderEvents
     {
         //=============================================================================//
-        //============ Events
+        //============ Events & Delegates
         //=============================================================================//
-        #region Events
+        #region Events & Delegates
         private static event Action _onLoaderProcessStart = null;
         private static event Action _onLoaderProcessFinish = null;
         private static event Action<string, float> _onLoaderProcessUpdate = null;
@@ -78,7 +78,6 @@
             }
         }
         #endregion
-        
         
         //=============================================================================//
         //============ Public Methods

@@ -7,9 +7,9 @@
     public class SceneDataBundle
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private List<SceneData> _scenes;
         private string _bundleIdentifier;
         private List<string> _bundleMainSceneNames;

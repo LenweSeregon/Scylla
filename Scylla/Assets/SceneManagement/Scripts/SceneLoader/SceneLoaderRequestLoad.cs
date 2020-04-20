@@ -9,9 +9,9 @@
     public class SceneLoaderRequestLoad : SceneLoaderRequest
     {
         //=============================================================================//
-        //============ Internal Fields
+        //============ Non-Serialized Fields
         //=============================================================================//
-        #region Internal Fields
+        #region Non-Serialized Fields
         private SceneDataBundle _bundle;
         private UnloadStrategy _unloadStrategy;
         #endregion
@@ -70,6 +70,54 @@
         #endregion
         
         //=============================================================================//
+        //============ Internal Methods
+        //=============================================================================//
+        #region Internal Methods
+        internal override SceneLoaderRequestResult Inspection(SceneCollection collection)
+        {
+            SceneLoaderRequestResult resultSceneInspection = ScenesExistsInspection(collection);
+            if (resultSceneInspection.IsSuccess == false) return resultSceneInspection;
+            
+            SceneLoaderRequestResult resultBundleInspection = BundleExistsInspection(collection);
+            if (resultBundleInspection.IsSuccess == false) return resultBundleInspection;
+            
+            SceneLoaderRequestResult resultAdditionalInspection = AdditionalInspection(collection);
+            if (resultAdditionalInspection.IsSuccess == false) return resultAdditionalInspection;
+            
+            return (SceneLoaderConstants.REQUEST_RESULTS[SceneLoaderReturnType.Accepted]);
+        }
+        
+        internal override Queue<InternalSceneRequest> BuildRequests(SceneCollection collection)
+        {
+            // Beforehand, we check once again that the request is valid
+            // If it's not, this is a development error, warn user and return
+            Queue<InternalSceneRequest> requestsUnload = _unloadStrategy.CreateRequests(collection, _forceNotSuppressible);
+            if (Inspection(collection).IsSuccess == false)
+            {
+                Debug.LogError("Development error -- Contact developer -- Initial inspection went wrong, this request should have been denied");
+                return null;
+            }
+            if (requestsUnload == null)
+            {
+                Debug.LogError("Development error -- Contact developer -- Initial inspection went wrong, this request should have been denied");
+                return null;
+            }
+            
+            // First of all, let's marshall all data input to convert them into an internal format
+            // Then, from marshalled data, feeded bundle properties to scenes datas
+            List<InternalSceneData> marshalledScenesToLoad = MarshallToInternalFormat(_bundle.Scenes);
+            List<InternalSceneData> bundleScenesToLoad = BundleIdentifierAttribution(collection, marshalledScenesToLoad);
+            
+            Queue<InternalSceneRequest> requests = new Queue<InternalSceneRequest>();
+            requests.AddRange(requestsUnload);
+            bundleScenesToLoad.ForEach(data => requests.Enqueue(new InternalSceneRequestLoad(data)));
+
+            return requests;
+        }
+
+        #endregion
+        
+        //=============================================================================//
         //============ Private / Protected Methods
         //=============================================================================//
         #region Private / Protected Methods
@@ -112,55 +160,6 @@
         }
         
         #endregion
-        
-        //=============================================================================//
-        //============ Internal Methods
-        //=============================================================================//
-        #region Internal Methods
-        internal override SceneLoaderRequestResult Inspection(SceneCollection collection)
-        {
-            SceneLoaderRequestResult resultSceneInspection = ScenesExistsInspection(collection);
-            if (resultSceneInspection._isSuccess == false) return resultSceneInspection;
-            
-            SceneLoaderRequestResult resultBundleInspection = BundleExistsInspection(collection);
-            if (resultBundleInspection._isSuccess == false) return resultBundleInspection;
-            
-            SceneLoaderRequestResult resultAdditionalInspection = AdditionalInspection(collection);
-            if (resultAdditionalInspection._isSuccess == false) return resultAdditionalInspection;
-            
-            return (SceneLoaderConstants.REQUEST_RESULTS[SceneLoaderReturnType.Accepted]);
-        }
-        
-        internal override Queue<InternalSceneRequest> BuildRequests(SceneCollection collection)
-        {
-            // Beforehand, we check once again that the request is valid
-            // If it's not, this is a development error, warn user and return
-            Queue<InternalSceneRequest> requestsUnload = _unloadStrategy.CreateRequests(collection, _forceNotSuppressible);
-            if (Inspection(collection)._isSuccess == false)
-            {
-                Debug.LogError("Development error -- Contact developer -- Initial inspection went wrong, this request should have been denied");
-                return null;
-            }
-            if (requestsUnload == null)
-            {
-                Debug.LogError("Development error -- Contact developer -- Initial inspection went wrong, this request should have been denied");
-                return null;
-            }
-            
-            // First of all, let's marshall all data input to convert them into an internal format
-            // Then, from marshalled data, feeded bundle properties to scenes datas
-            List<InternalSceneData> marshalledScenesToLoad = MarshallToInternalFormat(_bundle.Scenes);
-            List<InternalSceneData> bundleScenesToLoad = BundleIdentifierAttribution(collection, marshalledScenesToLoad);
-            
-            Queue<InternalSceneRequest> requests = new Queue<InternalSceneRequest>();
-            requests.AddRange(requestsUnload);
-            bundleScenesToLoad.ForEach(data => requests.Enqueue(new InternalSceneRequestLoad(data)));
 
-            return requests;
-        }
-
-        #endregion
-
-        
     }
 }
