@@ -27,16 +27,12 @@
             return UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_sceneData.SceneName);
         }
         
-        public override void DoEvent()
+        public override void DoEvents()
         {
             SceneLoaderEvents.TriggerOnSceneUnloaded(_sceneData.SceneName);
+            SceneLoaderEvents.TriggerOnSceneUnloadedInternal(_sceneData);
         }
         
-        public override void DoComplete(SceneLoader sceneLoader)
-        {
-            sceneLoader.RemoveSceneFromLoadedScene(_sceneData.SceneName);
-        }
-
         public override string GetDescription()
         {
             return "Unloading " + _sceneData.SceneName;

@@ -13,12 +13,24 @@
     {
         #region Constantes
         private readonly string PROPERTY_NAME_SCENE_LOADER = "_sceneLoaderProxy";
+        private readonly string PROPERTY_NAME_LOAD_SCENE_AT_START = "_loadSceneAtStart";
+        private readonly string PROPERTY_NAME_SCENE_TO_LOAD_AT_START_NAME = "_sceneToLoadAtStartName";
+        private readonly string PROPERTY_NAME_SCENE_TO_LOAD_AT_START_IS_MARKED = "_sceneToLoadAtStartIsMarked";
+        private readonly string PROPERTY_NAME_SCENE_TO_LOAD_AT_START_IS_SUPPRESSIBLE = "_sceneToLoadAtStartIsSuppressible";
+        private readonly string PROPERTY_NAME_SCENE_TO_LOAD_AT_START_BUNDLE_IDENTIFIER = "_sceneToLoadAtStartBundleIdentifier";
+        
+        
         #endregion
         
         #region Internal Fields
         private SceneManagerEditorData _mDatas;
         
         private SerializedProperty _propertySceneLoader;
+        private SerializedProperty _propertyLoadSceneAtStart;
+        private SerializedProperty _propertySceneToLoadAtStartName;
+        private SerializedProperty _propertySceneToLoadAtStartIsMarked;
+        private SerializedProperty _propertySceneToLoadAtStartIsSuppressible;
+        private SerializedProperty _propertySceneToLoadAtStartBundleIdentifier;
         #endregion
         
         #region Methods
@@ -31,6 +43,11 @@
         public override void OnInspectorGUI()
         {
             _propertySceneLoader = serializedObject.FindProperty(PROPERTY_NAME_SCENE_LOADER);
+            _propertyLoadSceneAtStart = serializedObject.FindProperty(PROPERTY_NAME_LOAD_SCENE_AT_START);
+            _propertySceneToLoadAtStartName = serializedObject.FindProperty(PROPERTY_NAME_SCENE_TO_LOAD_AT_START_NAME);
+            _propertySceneToLoadAtStartIsMarked = serializedObject.FindProperty(PROPERTY_NAME_SCENE_TO_LOAD_AT_START_IS_MARKED);
+            _propertySceneToLoadAtStartIsSuppressible = serializedObject.FindProperty(PROPERTY_NAME_SCENE_TO_LOAD_AT_START_IS_SUPPRESSIBLE);
+            _propertySceneToLoadAtStartBundleIdentifier = serializedObject.FindProperty(PROPERTY_NAME_SCENE_TO_LOAD_AT_START_BUNDLE_IDENTIFIER);
             
             serializedObject.Update();
             OnInspectorGUIObjectField();
@@ -80,6 +97,14 @@
             EditorGUI.indentLevel++;
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(_propertySceneLoader, new GUIContent("Scene loader proxy"));
+            EditorGUILayout.PropertyField(_propertyLoadSceneAtStart, new GUIContent("Load scene at start"));
+            if (_propertyLoadSceneAtStart.boolValue == true)
+            {
+                EditorGUILayout.PropertyField(_propertySceneToLoadAtStartName, new GUIContent("Scene name"));
+                EditorGUILayout.PropertyField(_propertySceneToLoadAtStartIsMarked, new GUIContent("Scene is marked"));
+                EditorGUILayout.PropertyField(_propertySceneToLoadAtStartIsSuppressible, new GUIContent("Scene is suppressible"));
+                EditorGUILayout.PropertyField(_propertySceneToLoadAtStartBundleIdentifier, new GUIContent("Scene bundle identifier"));
+            }
             EditorGUILayout.Space();
             EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();

@@ -38,8 +38,7 @@
         //=============================================================================//
         #region Public Methods
         public abstract AsyncOperation DoOperation();
-        public abstract void DoEvent();
-        public abstract void DoComplete(SceneLoader sceneLoader);
+        public abstract void DoEvents();
         public abstract string GetDescription();
         #endregion
 

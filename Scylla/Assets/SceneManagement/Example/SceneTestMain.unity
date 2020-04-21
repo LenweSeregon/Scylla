@@ -471,6 +471,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _sceneLoaderProxy: {fileID: 50391576}
+  _loadSceneAtStart: 1
+  _sceneToLoadAtStartName: SceneTestA
+  _sceneToLoadAtStartIsMarked: 0
+  _sceneToLoadAtStartIsSuppressible: 0
+  _sceneToLoadAtStartBundleIdentifier: 
 --- !u!4 &1122588707
 Transform:
   m_ObjectHideFlags: 0

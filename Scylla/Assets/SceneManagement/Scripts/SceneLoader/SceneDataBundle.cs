@@ -40,7 +40,7 @@
         {
             _scenes = scenes;
             _bundleIdentifier = null;
-            _bundleMainSceneNames = null;
+            _bundleMainSceneNames = new List<string>();
         }
         
         public SceneDataBundle(List<SceneData> scenes, string bundleIdentifier, List<string> bundleMainSceneNames)

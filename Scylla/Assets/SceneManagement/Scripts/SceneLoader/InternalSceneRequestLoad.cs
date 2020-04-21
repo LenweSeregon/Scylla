@@ -27,14 +27,10 @@
             return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(_sceneData.SceneName, LoadSceneMode.Additive);
         }
 
-        public override void DoEvent()
+        public override void DoEvents()
         {
             SceneLoaderEvents.TriggerOnSceneLoaded(_sceneData.SceneName);
-        }
-
-        public override void DoComplete(SceneLoader sceneLoader)
-        {
-            sceneLoader.AddSceneToLoadedScene(_sceneData);
+            SceneLoaderEvents.TriggerOnSceneLoadedInternal(_sceneData);
         }
 
         public override string GetDescription()

@@ -27,6 +27,15 @@ namespace Scylla.SceneManagement
             _maxBundleIdentifierInteger = 0;
             _scenes = new List<InternalSceneData>();
             _freedBundleIdentifiersInteger = new List<int>();
+
+            SceneLoaderEvents._onSceneLoadedInternal += OnSceneLoaded;
+            SceneLoaderEvents._onSceneUnloadedInternal += OnSceneUnloaded;
+        }
+        
+        ~SceneCollection()
+        {
+            SceneLoaderEvents._onSceneLoadedInternal -= OnSceneLoaded;
+            SceneLoaderEvents._onSceneUnloadedInternal -= OnSceneUnloaded;
         }
         #endregion
 
@@ -59,6 +68,17 @@ namespace Scylla.SceneManagement
         //=============================================================================//
         #region Private / Protected Methods
 
+        private void OnSceneLoaded(InternalSceneData sceneData)
+        {
+            _scenes.Add(sceneData);
+        }
+
+        private void OnSceneUnloaded(InternalSceneData sceneData)
+        {
+            FreeBundleIdentifierNumericIfExists(sceneData.BundleIdentifier);
+            _scenes.RemoveAll(scene => scene.SceneName == sceneData.SceneName);
+        }
+        
         private void FreeBundleIdentifierNumericIfExists(string bundleIdentifier)
         {
             Match regexMatch = Regex.Match(bundleIdentifier, SceneLoaderConstants.BUNDLE_IDENTIFIER_BASIS+"[0-9]+$");
@@ -143,30 +163,6 @@ namespace Scylla.SceneManagement
             return _scenes.Find(scene => scene.BundleIdentifier == bundleIdentifier) != null;
         }
 
-        public void AddScene(InternalSceneData sceneData)
-        {
-            _scenes.Add(sceneData);
-        }
-        
-        public void RemoveSceneByName(string sceneName)
-        {
-            InternalSceneData scene = GetScene(sceneName);
-            if (scene != null)
-            {
-                FreeBundleIdentifierNumericIfExists(scene.BundleIdentifier);
-                _scenes.Remove(scene);
-                
-            }
-        }
-
-        public void RemoveSceneByBundle(string bundleIdentifier)
-        {
-            int nbRemoved = _scenes.RemoveAll(scene => scene.BundleIdentifier == bundleIdentifier);
-            if (nbRemoved > 0)
-            {
-                FreeBundleIdentifierNumericIfExists(bundleIdentifier);
-            }
-        }
         #endregion
     }
 }

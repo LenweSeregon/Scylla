@@ -102,9 +102,6 @@
         private void Start()
         {
             SceneLoaderEvents.OnLoaderProcessFinish += OnLoaderProcessFinish;
-            
-            SceneLoaderRequest loadSceneA = new SceneLoaderRequestLoad("SceneTestA");
-            PostRequest(loadSceneA);
         }
 
         private void Update()

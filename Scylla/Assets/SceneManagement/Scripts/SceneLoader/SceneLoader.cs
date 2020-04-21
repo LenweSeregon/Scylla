@@ -69,7 +69,7 @@
             _collection = new SceneCollection();
 
             InternalSceneData loaderScene =  new InternalSceneData(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name, true, false, true, "MainSceneBundle", true);
-            _collection.AddScene(loaderScene);
+            SceneLoaderEvents.TriggerOnSceneLoadedInternal(loaderScene);
         }
 
         /// <summary>
@@ -100,20 +100,10 @@
         //============ Internal Methods
         //=============================================================================//
         #region Internal Methods
-        
-        internal void AddSceneToLoadedScene(InternalSceneData scene)
-        {
-            _collection.AddScene(scene);
-        }
-        
-        internal void RemoveSceneFromLoadedScene(string sceneName)
-        {
-            _collection.RemoveSceneByName(sceneName);
-        }
-        
+
         internal void SendRequest(Queue<InternalSceneRequest> requests)
         {
-            _currentProcess = new SceneLoaderProcess(_minimumLoadingTime, this, requests);
+            _currentProcess = new SceneLoaderProcess(_minimumLoadingTime, requests);
             SceneLoaderEvents.TriggerOnLoaderProcessStart();
         }
         

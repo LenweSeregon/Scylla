@@ -4,13 +4,20 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    /// <summary>
+    /// SceneLoaderProcess is an internal class which handle the processus of loading / unloading one or severals
+    /// scenes. It is directly driven by the SceneLoader which create a new SceneLoaderProcess and feed in the requests
+    /// that come from the SceneLaoderProxy.
+    ///
+    /// We use this class to encapsulate the processus and to regroup fields that takes part in the processus.
+    /// The  
+    /// </summary>
     internal class SceneLoaderProcess
     {
         //=============================================================================//
         //============ Non-Serialized Fields
         //=============================================================================//
         #region Non-Serialized Fields
-        private SceneLoader _sceneLoader;
         private float _minimumProcessTime;
         private Queue<InternalSceneRequest> _requests;
 
@@ -43,9 +50,8 @@
         //============ Lifecycle Methods
         //=============================================================================//
         #region Lifecycle Methods
-        public SceneLoaderProcess(float minimumProcessTime, SceneLoader sceneLoader, Queue<InternalSceneRequest> requests)
+        public SceneLoaderProcess(float minimumProcessTime, Queue<InternalSceneRequest> requests)
         {
-            _sceneLoader = sceneLoader;
             _minimumProcessTime = minimumProcessTime;
             _currentProcessTimer = 0f;
             _currentProcessProgress = 0f;
@@ -98,8 +104,7 @@
             if (_currentOperation.isDone && allowSceneActivation)
             {
                 _globalProcessProgress += 1f;
-                _currentRequest.DoComplete(_sceneLoader);
-                _currentRequest.DoEvent();
+                _currentRequest.DoEvents();
                 _currentRequest = null;
                 _currentOperation = null;
             }
