@@ -48,11 +48,16 @@ namespace Scylla.Editor
         {
             List<string> fileContent = new List<string>();
             
-            fileContent.Add("// File auto-generated from Scylla");
+            fileContent.Add("// File auto-generated from Scylla SceneManagement");
             fileContent.Add("// You MUST not modify this enumeration manually but use the generation tool provided");
             fileContent.Add("");
-            fileContent.Add("namespace " + _mEnumerationNamespace);
-            fileContent.Add("{");
+            
+            if (string.IsNullOrEmpty(_mEnumerationNamespace) == false)
+            {
+                fileContent.Add("namespace " + _mEnumerationNamespace);
+                fileContent.Add("{");
+            }
+
             fileContent.Add("\tpublic enum " + _mEnumerationName);
             fileContent.Add("\t{");
             for (var i = 0; i < _mEnumerationValues.Length; i++)
@@ -71,7 +76,10 @@ namespace Scylla.Editor
             }
 
             fileContent.Add("\t}");
-            fileContent.Add("}");
+            if (string.IsNullOrEmpty(_mEnumerationNamespace) == false)
+            {
+                fileContent.Add("}");
+            }
 
             return fileContent;
         }

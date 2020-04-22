@@ -19,11 +19,14 @@
     /// So be aware that if you define a scene to load at start in SceneManager and press PlayMode in another scene that
     /// is containing a ScyllaScene's component which force the main scene to be loaded, it will override the one you defined.
     /// 
-    /// SceneManager has a special editor that is use to auto-generate a .cs file that contains an enumeration
-    /// representing all scene that are in the BuildSettings. The auto-generate settings allows to choose
-    /// the folder where you want to generate the enumeration and should be in your current project obviously.
-    /// You'll then be able to use this enumeration by casting values to string, to communicate with the SceneLoaderProxy
-    /// and ask to load / unload scenes with those values.
+    /// SceneManager has a special editor.
+    /// It allows to auto-generate a .cs file that contains an enumeration representing all scene that are in the BuildSettings.
+    /// The auto-generate settings allows to choose the folder where you want to generate the enumeration and should be in your
+    /// current project obviously.  You'll then be able to use this enumeration by casting values to string, to communicate with
+    /// the SceneLoaderProxy and ask to load / unload scenes with those values.
+    /// It allows to auto-generate a scene by configuring where you want the scene to be saved, and if you want to
+    /// regenerate the enumeration SceneType and add the scene to buildSettings. The generated scene will by default
+    /// has a ScyllaScene component.
     /// </summary>
     public class SceneManager : Singleton<SceneManager>
     {

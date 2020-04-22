@@ -1,4 +1,8 @@
-﻿namespace Scylla.SceneManagement.Editor
+﻿using System.IO;
+using System.Linq;
+using UnityEditor.SceneManagement;
+
+namespace Scylla.SceneManagement.Editor
 {
     using Scylla.Editor;
     using System;
@@ -23,7 +27,7 @@
         #endregion
         
         #region Internal Fields
-        private SceneManagerEditorData _mDatas;
+        private SceneManagerEditorData _datas;
         
         private SerializedProperty _propertySceneLoader;
         private SerializedProperty _propertyLoadSceneAtStart;
@@ -37,7 +41,7 @@
 
         private void OnEnable()
         {
-            _mDatas = new SceneManagerEditorData();
+            _datas = new SceneManagerEditorData();
         }
 
         public override void OnInspectorGUI()
@@ -82,6 +86,8 @@
         
         private void OnInspectorGUIAutoGenerateSection()
         {
+            bool canAutoGenerateEnumeration = true;
+            
             // Drawing header Scylla's scene management
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
@@ -93,6 +99,7 @@
 
             EditorGUILayout.Space();
 
+            // Drawing fields property
             EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUI.indentLevel++;
             EditorGUILayout.Space();
@@ -109,114 +116,341 @@
             EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();
 
+            
             EditorGUILayout.Space();
             
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
-                EditorGUILayout.Space();
-                
-                if (string.IsNullOrEmpty(_mDatas.EnumerationFolderGeneration))
-                {
-                    EditorGUILayout.HelpBox("Auto-generated folder cannot be empty", MessageType.Error);
-                }
+                EditorGUILayoutUtils.LabelField("Builds settings & Management", TextAnchor.MiddleCenter, FontStyle.Bold);
                 
                 EditorGUILayout.Space();
                 
                 EditorGUI.indentLevel++;
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
-                 _mDatas.FoldoutAutoGenerationSettings = EditorGUILayout.BeginFoldoutHeaderGroup(_mDatas.FoldoutAutoGenerationSettings, "Auto-generation settings");
-                 GUILayout.Space(4);
-                 EditorGUILayout.EndHorizontal();
-                 EditorGUILayout.Space();
-                 
-                if (_mDatas.FoldoutAutoGenerationSettings)
-                {
-                    EditorGUILayout.BeginVertical();
-                    {
-                        EditorGUILayout.BeginHorizontal();
-                        {
-                            GUI.enabled = false;
-                            EditorGUILayout.TextField(new GUIContent("Auto-generated folder"), _mDatas.EnumerationFolderGeneration);
-                            GUI.enabled = true;
-                            if (GUILayout.Button("Browse", GUILayout.Width(60)))
-                            {
-                                string path = EditorUtility.OpenFolderPanel("Select auto-generated files's folder", Application.dataPath, _mDatas.EnumerationFolderGeneration);
-                                _mDatas.EnumerationFolderGeneration = path;
-                                serializedObject.ApplyModifiedProperties();
-                                Repaint();
-                            }
-                        }
-                        EditorGUILayout.EndHorizontal();
-                        EditorGUI.BeginChangeCheck();
-                        _mDatas.EnumerationName = EditorGUILayout.TextField(new GUIContent("Enumeration name"), _mDatas.EnumerationName);
-                        _mDatas.EnumerationNamespace = EditorGUILayout.TextField(new GUIContent("Enumeration namespace"), _mDatas.EnumerationNamespace);
-                        _mDatas.EnumerationFileName = EditorGUILayout.TextField(new GUIContent("Enumeration file name"), _mDatas.EnumerationFileName);
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            Debug.Log("Bool exists : " + HasType(_mDatas.EnumerationName, _mDatas.EnumerationNamespace));
-                        }
-                    }
-                    EditorGUILayout.EndVertical();
-                }
-                EditorGUILayout.EndFoldoutHeaderGroup();
                 
+                // BUILDS SETTINGS VISUALIZER
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
-                _mDatas.FoldoutAutoGenerationManualModification = EditorGUILayout.BeginFoldoutHeaderGroup(_mDatas.FoldoutAutoGenerationManualModification, "Auto-generation enumeration values");
+                _datas.FoldoutBuildSettingsVisualizer = EditorGUILayout.BeginFoldoutHeaderGroup(_datas.FoldoutBuildSettingsVisualizer, "Builds Settings visualizer");
                 GUILayout.Space(4);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.Space();
-                
-                if (_mDatas.FoldoutAutoGenerationManualModification)
+
+                if (_datas.FoldoutBuildSettingsVisualizer)
                 {
-                    _mDatas.EnumerationValues = new List<string>();
                     for (var i = 0; i < EditorBuildSettings.scenes.Length; i++)
                     {
                         EditorBuildSettingsScene scene = EditorBuildSettings.scenes[i];
                         bool sceneEnabled = scene.enabled;
-                        
+                        bool sceneDeleted = File.Exists(scene.path) == false;
+                    
                         EditorGUILayout.BeginHorizontal();
                         {
-                            if(sceneEnabled)
-                                _mDatas.EnumerationValues.Add(System.IO.Path.GetFileNameWithoutExtension(scene.path));
-                            
-                            string textIncluded = (sceneEnabled) ? ("Included") : ("Not included");
-                            Color color = (sceneEnabled) ? (Color.green) : (Color.red);
+                            string textIncluded = "";
+                            Color color = Color.white;
+
+                            if (sceneDeleted)
+                            {
+                                textIncluded = "Deleted";
+                                color = Color.black;
+                            }
+                            else if (sceneEnabled)
+                            {
+                                textIncluded = "Included";
+                                color = Color.green;
+                            }
+                            else
+                            {
+                                textIncluded = "Not included";
+                                color = Color.red;
+                            }
+
                             EditorGUILayout.LabelField("Scene : " + i, System.IO.Path.GetFileNameWithoutExtension(scene.path));
                             EditorGUILayoutUtils.LabelField(textIncluded, color, new GUILayoutOption[] { GUILayout.Width(120) }, TextAnchor.MiddleRight);
                         }
                         EditorGUILayout.EndHorizontal();
                     }
                 }
-
                 EditorGUILayout.EndFoldoutHeaderGroup();
                 
+                EditorGUILayout.Space();
+                
+                // BUILDS SETTINGS MANAGEMENT
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
-                _mDatas.FoldoutAutoGenerationGenerate = EditorGUILayout.BeginFoldoutHeaderGroup(_mDatas.FoldoutAutoGenerationGenerate, "Auto-generation");
+                _datas.FoldoutBuildSettingsManagement = EditorGUILayout.BeginFoldoutHeaderGroup(_datas.FoldoutBuildSettingsManagement, "Builds Settings Management");
                 GUILayout.Space(4);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.Space();
 
-                if (_mDatas.FoldoutAutoGenerationGenerate)
-                {                
+                if (_datas.FoldoutBuildSettingsManagement)
+                {
+                    // Button to delete from build settings deleted scenes
                     EditorGUILayout.BeginHorizontal();
                     {
                         GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
-                        if (GUILayout.Button("Generate"))
+                        if (GUILayout.Button("Delete deleted's scene in Build Settings"))
                         {
-                            EnumerationGenerator generator = new EnumerationGenerator(_mDatas.EnumerationFolderGeneration, _mDatas.EnumerationFileName, 
-                                _mDatas.EnumerationName, _mDatas.EnumerationNamespace, _mDatas.EnumerationValues.ToArray());
-                            generator.GenerateFile();
+                            EditorBuildSettingsScene[] originalScenes = EditorBuildSettings.scenes;
+                            List<EditorBuildSettingsScene> withoutDeleted = new List<EditorBuildSettingsScene>(originalScenes);
+                            withoutDeleted.RemoveAll(scene => File.Exists(scene.path) == false);
+                            EditorBuildSettings.scenes = withoutDeleted.ToArray();
                         }
                     }
                     EditorGUILayout.EndHorizontal();
                 }
+                EditorGUILayout.EndFoldoutHeaderGroup();
+
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+            
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            {
+                EditorGUILayoutUtils.LabelField("Enumeration auto-generation section", TextAnchor.MiddleCenter, FontStyle.Bold);
+                
+                // Auto-generation enum
+                EditorGUILayout.Space();
+                
+                EditorGUI.indentLevel++;
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+                 _datas.FoldoutAutoGenerationSettings = EditorGUILayout.BeginFoldoutHeaderGroup(_datas.FoldoutAutoGenerationSettings, "Auto-generation settings");
+                 GUILayout.Space(4);
+                 EditorGUILayout.EndHorizontal();
+                 EditorGUILayout.Space();
+                 
+                if (_datas.FoldoutAutoGenerationSettings)
+                {
+                    EditorGUILayout.BeginVertical();
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            GUI.enabled = false;
+                            EditorGUILayout.TextField(new GUIContent("Auto-generated folder"), _datas.EnumerationFolderGeneration);
+                            GUI.enabled = true;
+                            if (GUILayout.Button("Browse", GUILayout.Width(60)))
+                            {
+                                string path = EditorUtility.OpenFolderPanel("Select auto-generated files's folder", Application.dataPath, _datas.EnumerationFolderGeneration);
+                                _datas.EnumerationFolderGeneration = path;
+                                serializedObject.ApplyModifiedProperties();
+                                Repaint();
+                            }
+                        }
+                        EditorGUILayout.EndHorizontal();
+                        EditorGUI.BeginChangeCheck();
+                        _datas.EnumerationName = EditorGUILayout.TextField(new GUIContent("Enumeration name"), _datas.EnumerationName);
+                        _datas.EnumerationNamespace = EditorGUILayout.TextField(new GUIContent("Enumeration namespace"), _datas.EnumerationNamespace);
+                        _datas.EnumerationFileName = EditorGUILayout.TextField(new GUIContent("Enumeration file name"), _datas.EnumerationFileName);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            Debug.Log("Bool exists : " + HasType(_datas.EnumerationName, _datas.EnumerationNamespace));
+                        }
+                    }
+                    EditorGUILayout.EndVertical();
+                }
+                EditorGUILayout.EndFoldoutHeaderGroup();
+
+                EditorGUILayout.Space();
+
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+                _datas.FoldoutAutoGenerationGenerate = EditorGUILayout.BeginFoldoutHeaderGroup(_datas.FoldoutAutoGenerationGenerate, "Auto-generation");
+                GUILayout.Space(4);
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space();
+
+                if (_datas.FoldoutAutoGenerationGenerate)
+                {                
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        if (string.IsNullOrEmpty(_datas.EnumerationFolderGeneration))
+                        {
+                            EditorGUILayout.HelpBox("Auto-generated folder cannot be empty", MessageType.Error);
+                            canAutoGenerateEnumeration = false;
+                        }
+                        else if (string.IsNullOrEmpty(_datas.EnumerationFileName))
+                        {
+                            EditorGUILayout.HelpBox("Auto-generated enumeration filename cannot be empty", MessageType.Error);
+                            canAutoGenerateEnumeration = false;
+                        }
+                        else if (string.IsNullOrEmpty(_datas.EnumerationName))
+                        {
+                            EditorGUILayout.HelpBox("Auto-generated enumeration name cannot be empty", MessageType.Error);
+                            canAutoGenerateEnumeration = false;
+                        }
+                        else
+                        {
+                            canAutoGenerateEnumeration = true;
+                            GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+                            if (GUILayout.Button("Generate"))
+                            {
+                                GenerateEnumeration();
+                            }
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+                
+                EditorGUILayout.EndFoldoutHeaderGroup();
+                EditorGUILayout.Space();
             }
             
             EditorGUILayout.EndVertical();
+            EditorGUI.indentLevel--;
+            
             EditorGUILayout.Space();
+            
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            {
+                EditorGUILayoutUtils.LabelField("Scene auto-generation section", TextAnchor.MiddleCenter, FontStyle.Bold);
+
+                EditorGUILayout.Space();
+                
+                EditorGUI.indentLevel++;
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+                _datas.FoldoutAutoGenerationSceneGlobalSettings = EditorGUILayout.BeginFoldoutHeaderGroup(_datas.FoldoutAutoGenerationSceneGlobalSettings, "Auto-generation settings");
+                GUILayout.Space(4);
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space();
+
+                if (_datas.FoldoutAutoGenerationSceneGlobalSettings)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        GUI.enabled = false;
+                        EditorGUILayout.TextField(new GUIContent("Scene auto-generated folder"), _datas.SceneFolderGeneration);
+                        GUI.enabled = true;
+                        if (GUILayout.Button("Browse", GUILayout.Width(60)))
+                        {
+                            string path = EditorUtility.OpenFolderPanel("Select auto-generated files's folder", Application.dataPath, _datas.SceneFolderGeneration);
+                            _datas.SceneFolderGeneration = path;
+                            serializedObject.ApplyModifiedProperties();
+                            Repaint();
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    _datas.SceneAddToBuild = EditorGUILayout.Toggle(new GUIContent("Add scene to build settings"), _datas.SceneAddToBuild);
+                    if (_datas.SceneAddToBuild)
+                    {
+                        _datas.RegenerateEnum = EditorGUILayout.Toggle(new GUIContent("Regenerate scenes enumeration"), _datas.RegenerateEnum);
+                    }
+                    else
+                    {
+                        _datas.RegenerateEnum = false;
+                    }
+                }
+                
+                EditorGUILayout.EndFoldoutHeaderGroup();
+                
+                EditorGUILayout.Space();
+                
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+                _datas.FoldoutAutoGenerationSceneSettings = EditorGUILayout.BeginFoldoutHeaderGroup(_datas.FoldoutAutoGenerationSceneSettings, "Auto-generation scene settings");
+                GUILayout.Space(4);
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space();
+
+                if (_datas.FoldoutAutoGenerationSceneSettings)
+                {
+                    _datas.SceneName = EditorGUILayout.TextField(new GUIContent("Scene name"), _datas.SceneName);
+                }
+                
+                EditorGUILayout.EndFoldoutHeaderGroup();
+                
+                EditorGUILayout.Space();
+                
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+                _datas.FoldoutAutoGenerationSceneGenerate = EditorGUILayout.BeginFoldoutHeaderGroup(_datas.FoldoutAutoGenerationSceneGenerate, "Auto-generation settings");
+                GUILayout.Space(4);
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space();
+
+                if (_datas.FoldoutAutoGenerationSceneGenerate)
+                {
+                    if (string.IsNullOrEmpty(_datas.SceneFolderGeneration))
+                    {
+                        EditorGUILayout.HelpBox("Scene auto-generated folder cannot be empty", MessageType.Error);
+                    }
+                    else if (string.IsNullOrEmpty(_datas.SceneName))
+                    {
+                        EditorGUILayout.HelpBox("Scene auto-generated name cannot be empty", MessageType.Error);
+                    }
+                    else if (_datas.RegenerateEnum && canAutoGenerateEnumeration == false)
+                    {
+                        EditorGUILayout.HelpBox("Can't regenerate enum when auto-generation enumeration has issues", MessageType.Error);
+                    }
+                    else
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+                            if (GUILayout.Button("Generate"))
+                            {
+                                string relativeFolderPath = "";
+
+                                if (_datas.SceneFolderGeneration.StartsWith(Application.dataPath)) {
+                                    relativeFolderPath=  "Assets" + _datas.SceneFolderGeneration.Substring(Application.dataPath.Length);
+                                }
+
+                                UnityEngine.SceneManagement.Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+                                scene.name = _datas.SceneName;
+                                string relativePath = Path.Combine(relativeFolderPath,scene.name + ".unity");
+                                GameObject scyllaSceneGO = new GameObject("ScyllaScene");
+                                scyllaSceneGO.AddComponent(typeof(ScyllaScene));
+                                EditorSceneManager.SaveScene(scene, relativePath);
+                                EditorSceneManager.CloseScene(scene, true);
+
+                                if (_datas.SceneAddToBuild)
+                                {
+                                    EditorBuildSettingsScene[] originalScenes = EditorBuildSettings.scenes;
+                                    EditorBuildSettingsScene[] newScenes = new EditorBuildSettingsScene[originalScenes.Length + 1];
+                                    Array.Copy(originalScenes, newScenes, originalScenes.Length);
+
+                                    EditorBuildSettingsScene sceneToAdd = new EditorBuildSettingsScene(relativePath, true);
+                                    newScenes[newScenes.Length - 1] = sceneToAdd; 
+                                    EditorBuildSettings.scenes = newScenes;
+                                }
+
+                                if (_datas.RegenerateEnum)
+                                {
+                                    GenerateEnumeration();
+                                }
+                            }
+                        }
+                        EditorGUILayout.EndHorizontal();
+                    }
+                }
+                
+                EditorGUILayout.EndFoldoutHeaderGroup();
+                
+            }
+            
+            EditorGUILayout.Space();
+            EditorGUILayout.EndVertical();
+        }
+        
+        private void GenerateEnumeration()
+        {
+            _datas.EnumerationValues = new List<string>();
+            for (var i = 0; i < EditorBuildSettings.scenes.Length; i++)
+            {
+                EditorBuildSettingsScene scene = EditorBuildSettings.scenes[i];
+                bool sceneEnabled = scene.enabled;
+                bool sceneDeleted = File.Exists(scene.path) == false;
+                
+                if (sceneEnabled && sceneDeleted == false)
+                    _datas.EnumerationValues.Add(System.IO.Path.GetFileNameWithoutExtension(scene.path));
+            }
+                                    
+                                    
+            EnumerationGenerator generator = new EnumerationGenerator(_datas.EnumerationFolderGeneration, _datas.EnumerationFileName, 
+                _datas.EnumerationName, _datas.EnumerationNamespace, _datas.EnumerationValues.ToArray());
+            generator.GenerateFile();
         }
         
         #endregion
