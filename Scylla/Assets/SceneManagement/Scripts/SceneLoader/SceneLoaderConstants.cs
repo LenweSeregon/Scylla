@@ -56,8 +56,8 @@
         //============ Constantes
         //=============================================================================//
         #region Constantes
-        public static string BUNDLE_IDENTIFIER_BASIS = "Bundle";
-        public static Dictionary<SceneLoaderReturnType, SceneLoaderRequestResult> REQUEST_RESULTS = new Dictionary<SceneLoaderReturnType, SceneLoaderRequestResult>()
+        public static readonly string BUNDLE_IDENTIFIER_BASIS = "Bundle";
+        public static readonly Dictionary<SceneLoaderReturnType, SceneLoaderRequestResult> REQUEST_RESULTS = new Dictionary<SceneLoaderReturnType, SceneLoaderRequestResult>()
         {
             [SceneLoaderReturnType.Accepted] = new SceneLoaderRequestResult(0, "Request accepted", true),
             

@@ -28,7 +28,7 @@
     /// regenerate the enumeration SceneType and add the scene to buildSettings. The generated scene will by default
     /// has a ScyllaScene component.
     /// </summary>
-    public class SceneManager : Singleton<SceneManager>
+    public class SceneManager : MonobehaviourSingleton<SceneManager>
     {
         //=============================================================================//
         //============ Events & Delegates
