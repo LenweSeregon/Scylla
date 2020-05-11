@@ -20,10 +20,12 @@
 
         private Dictionary<string, SO_UniqueIdentifierDatabaseInformation> _unserialized = new Dictionary<string, SO_UniqueIdentifierDatabaseInformation>();
 
-        public SO_UniqueIdentifierAsset GenerateUniqueAsset(string information, bool shareable)
+        public SO_UniqueIdentifierAsset GenerateUniqueAsset(string assetName, string information, bool shareable)
         {
             Guid guid = Guid.NewGuid();
             string guidString = guid.ToString();
+            string assetFilename = string.IsNullOrEmpty(assetName) ? guidString : assetName + "Guid";
+            string uniqueAssetFilename = AssetDatabase.GenerateUniqueAssetPath("Assets/UniqueIdentifierAssets/IdentifierAssets/"+assetFilename+".asset");
             SO_UniqueIdentifierAsset uniqueAsset = ScriptableObject.CreateInstance<SO_UniqueIdentifierAsset>();
             uniqueAsset.Populate(guidString, "", shareable);
             if (AssetDatabase.IsValidFolder("Assets/UniqueIdentifierAssets") == false)
@@ -36,8 +38,7 @@
                 AssetDatabase.CreateFolder("Assets/UniqueIdentifierAssets", "IdentifierAssets");
             }
 
-            AssetDatabase.CreateAsset(uniqueAsset,
-                "Assets/UniqueIdentifierAssets/IdentifierAssets/" + guidString + ".asset");
+            AssetDatabase.CreateAsset(uniqueAsset, uniqueAssetFilename);
             AssetDatabase.SaveAssets();
 
             _unserialized.Add(guidString, new SO_UniqueIdentifierDatabaseInformation(){_guidAsset = uniqueAsset, _references = 1});

@@ -10,11 +10,13 @@ namespace Scylla.PersistenceManagement
     [ExecuteInEditMode]
     public abstract class AStorable : MonoBehaviour
     {
+        [SerializeField] private Guid _guid;
+        
         private void Reset()
         {
             #if UNITY_EDITOR
                 
-                Storable storable = GetComponent<Storable>();
+                Storable storable = GetComponentInParent<Storable>();
                 if (storable != null)
                 {
                     storable.AddStorable(this);
@@ -23,13 +25,13 @@ namespace Scylla.PersistenceManagement
                 
             #endif
         }
-
+        
         private void OnDisable()
         {
             #if UNITY_EDITOR
             if (Application.isPlaying == false && Application.isEditor && Time.timeSinceLevelLoad > 0f)
             {
-                Storable storable = GetComponent<Storable>();
+                Storable storable = GetComponentInParent<Storable>();
                 if (storable != null)
                 {
                     storable.RemoveStorable(this);

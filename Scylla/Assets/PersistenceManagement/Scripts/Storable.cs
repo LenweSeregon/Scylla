@@ -1,4 +1,8 @@
-﻿namespace Scylla.PersistenceManagement
+﻿using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+
+namespace Scylla.PersistenceManagement
 {
     using System;
     using Scylla.ObjectManagement;
@@ -7,7 +11,6 @@
     using UnityEngine;
 
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(UniqueIdentifier))]
     public class Storable : MonoBehaviour
     {
         //=============================================================================//
@@ -19,9 +22,9 @@
         public class AStorableReference
         {
             public AStorable _storable;
-            public string _guid;
+            public Scylla.CommonModules.Identification.Guid _guid;
 
-            public AStorableReference(AStorable storable, string guid)
+            public AStorableReference(AStorable storable, Scylla.CommonModules.Identification.Guid guid)
             {
                 _storable = storable;
                 _guid = guid;
@@ -34,7 +37,7 @@
         //============ Serialized Fields
         //=============================================================================//
         [SerializeField] private Scylla.CommonModules.Identification.Guid _guid = null;
-        [SerializeField] private List<AStorableReference> _storables = null;
+        [SerializeField, HideInInspector] private List<AStorableReference> _storables = null;
         
         //=============================================================================//
         //============ Non-Serialized Fields
@@ -70,12 +73,44 @@
 
         public void AddStorable(AStorable storable)
         {
-            _storables.Add(new AStorableReference(storable, Guid.NewGuid().ToString()));
+            _storables.Add(new AStorableReference(storable, null));
+            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
         }
 
         public void RemoveStorable(AStorable storable)
         {
             _storables.RemoveAll(reference => reference._storable == storable);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+        }
+
+        public void RefreshStorables()
+        {
+            RetrieveStorables();
+        }
+
+        private void RetrieveStorables()
+        {
+            if (_storables == null)
+                _storables = new List<AStorableReference>();
+            
+            List<AStorable> storablesFetched = GetComponentsInChildren<AStorable>().ToList();
+            
+            // Remove all storable which were in list but no longer in the fetched list
+            _storables.RemoveAll(storable => storablesFetched.Contains(storable._storable) == false);
+            
+            // Add all storable which are in fetched list but not in list
+            foreach (AStorable storable in storablesFetched)
+            {
+                if (_storables.Find(storableReference => storableReference._storable == storable) == null)
+                {
+                    _storables.Add(new AStorableReference(storable, null));
+                }
+            }
+
+            EditorUtility.SetDirty(this);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+            EditorSceneManager.SaveOpenScenes();
+            Debug.Log("toto");
         }
         
         public void LoadRequest(Storage storage)

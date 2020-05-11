@@ -16,11 +16,6 @@ namespace Scylla.PersistenceManagement
             public Vector3 position;
         }
 
-        [SerializeField] private string toto;
-
-        [SerializeField]
-        private Scylla.CommonModules.Identification.Guid _guid;
-        
         public override string Save()
         {
             Data data = new Data()

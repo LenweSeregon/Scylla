@@ -62,9 +62,9 @@
             return GetInstance().InternalIsUnique(guid);
         }
 
-        public static SO_UniqueIdentifierAsset GenerateUniqueIdentifier(string info = null, bool shareable = false)
+        public static SO_UniqueIdentifierAsset GenerateUniqueIdentifier(string assetName = null, string info = null, bool shareable = false)
         {
-            return GetInstance().InternalGenerateUniqueIdentifier(info, shareable);
+            return GetInstance().InternalGenerateUniqueIdentifier(assetName, info, shareable);
         }
 
         public static void IncreaseReferenceTo(SO_UniqueIdentifierAsset asset)
@@ -87,9 +87,9 @@
             _database.IncreaseReferenceTo(asset);
         }
         
-        private SO_UniqueIdentifierAsset InternalGenerateUniqueIdentifier(string information, bool shareable)
+        private SO_UniqueIdentifierAsset InternalGenerateUniqueIdentifier(string assetName, string information, bool shareable)
         {
-            return _database.GenerateUniqueAsset(information, shareable);
+            return _database.GenerateUniqueAsset(assetName, information, shareable);
         }
 
         private void InternalDecreaseReferenceTo(SO_UniqueIdentifierAsset asset)
