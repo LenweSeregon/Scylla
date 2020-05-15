@@ -21,7 +21,7 @@
                 scale = transform.localScale
             };
             
-            return JsonUtility.ToJson(data, true);
+            return JsonUtility.ToJson(data);
         }
 
         public override void Load(string stringData)

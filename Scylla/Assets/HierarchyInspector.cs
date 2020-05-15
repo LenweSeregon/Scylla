@@ -31,7 +31,7 @@ namespace Scylla
 #if UNITY_EDITOR
         static HierarchyInspector()
         {
-            Undo.postprocessModifications += OnPostProcessModifications;
+            //Undo.postprocessModifications += OnPostProcessModifications;
             
             EditorApplication.hierarchyChanged += OnHierarchyChanged;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;

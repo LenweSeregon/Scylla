@@ -131,7 +131,7 @@
         {
             try
             {
-                ReadOperation<string> operation = IOFactory.GetReadTextOperation(_pathToMetadata);
+                ReadOperation<string> operation = IOFactory.GetReadTextOperation(_pathToSaveFile);
                 operation.DoOperationSync();
                 string result = operation.GetResult();
                 _data = JsonUtility.FromJson<DataContainer>(result);

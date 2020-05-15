@@ -105,6 +105,9 @@ namespace Scylla.PersistenceManagement
             SceneManager.sceneUnloaded += OnSceneUnloaded;
             _currentFilepath = null;
             _currentStorage = null;
+            
+            LoadMostRecent();
+            _currentStorage.Load();
         }
 
         private void Start()
@@ -122,7 +125,7 @@ namespace Scylla.PersistenceManagement
                 _currentStorage = mostRecent;
             }
 
-            SyncSave();
+            LoadMostRecent();
             SyncLoad();
         }
 
@@ -167,12 +170,13 @@ namespace Scylla.PersistenceManagement
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            
+            LoadMostRecent();
+            SyncLoad();
         }
 
         private void OnSceneUnloaded(Scene scene)
         {
-            
+            SyncSave();
         }
         
         #endregion
@@ -315,6 +319,8 @@ namespace Scylla.PersistenceManagement
                 return;
             }
 
+            _currentStorage.LoadData();
+            
             foreach (Storable storable in _storableListeners)
             {
                 storable.LoadRequest(_currentStorage);

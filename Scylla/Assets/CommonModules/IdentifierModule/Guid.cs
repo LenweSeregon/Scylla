@@ -18,5 +18,6 @@
         [SerializeField] protected SO_UniqueIdentifierAsset _assetShareable;
 
         public string GetGuid => _assetShareable.Guid;
+        public string GetInformation => _assetShareable.Informations;
     }
 }

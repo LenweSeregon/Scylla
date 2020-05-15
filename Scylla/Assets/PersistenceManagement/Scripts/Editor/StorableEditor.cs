@@ -35,16 +35,18 @@ namespace Scylla.PersistenceManagement.Editor
             EditorGUILayout.TextField("Save Identifier", EditorStyles.boldLabel);
             EditorGUILayout.EndHorizontal();
 
-            for (int i = 0; i < arraySizeProp.intValue; i++)
+            int arraySize = arraySizeProp.intValue;
+            for (int i = 0; i < arraySize; i++)
             {
                 var subProperty = property.GetArrayElementAtIndex(i);
-                var guid = subProperty.FindPropertyRelative("_guid");
-                var monoBehaviour = subProperty.FindPropertyRelative("_storable");
+                var sub = new SerializedObject(subProperty.objectReferenceValue);
+                var guid = sub.FindProperty("_guid");
+                // = subProperty.FindPropertyRelative("_guid");
 
                 EditorGUILayout.BeginHorizontal();
                 GUI.enabled = false;
                 EditorGUIUtility.labelWidth = 25;
-                EditorGUILayout.PropertyField(monoBehaviour, new GUIContent());
+                EditorGUILayout.PropertyField(subProperty, new GUIContent());
                 EditorGUIUtility.labelWidth = 0;
                 GUI.enabled = true;
 

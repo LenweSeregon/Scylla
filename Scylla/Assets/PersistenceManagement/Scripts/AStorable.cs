@@ -7,40 +7,13 @@ namespace Scylla.PersistenceManagement
     using System.Collections.Generic;
     using UnityEngine;
 
-    [ExecuteInEditMode]
     public abstract class AStorable : MonoBehaviour
     {
-        [SerializeField] private Guid _guid;
-        
-        private void Reset()
-        {
-            #if UNITY_EDITOR
-                
-                Storable storable = GetComponentInParent<Storable>();
-                if (storable != null)
-                {
-                    storable.AddStorable(this);
-                    EditorUtility.SetDirty(storable);
-                } 
-                
-            #endif
-        }
-        
-        private void OnDisable()
-        {
-            #if UNITY_EDITOR
-            if (Application.isPlaying == false && Application.isEditor && Time.timeSinceLevelLoad > 0f)
-            {
-                Storable storable = GetComponentInParent<Storable>();
-                if (storable != null)
-                {
-                    storable.RemoveStorable(this);
-                    EditorUtility.SetDirty(storable);
-                } 
-            }
-            #endif
-        }
+        [SerializeField, HideInInspector] private Scylla.CommonModules.Identification.Guid _guid;
 
+        public string Guid => _guid.GetGuid;
+        public string Information => _guid.GetInformation;
+        
         public abstract string Save();
         public abstract void Load(string stringData);
     }

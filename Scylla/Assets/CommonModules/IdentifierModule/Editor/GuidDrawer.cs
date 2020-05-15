@@ -1,4 +1,6 @@
-﻿using Scylla.ObjectManagement;
+﻿using System.Reflection;
+using Scylla.ObjectManagement;
+using Scylla.PersistenceManagement;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 
@@ -41,14 +43,40 @@ namespace Scylla.CommonModules.Identification
             return PrefabUtility.IsPartOfPrefabAsset(obj) || IsEditingInPrefabMode(obj);
         }
         
+        public SO_UniqueIdentifierAsset GenerateUniqueAsset(string assetName, string information, bool shareable)
+        {
+            System.Guid guid = System.Guid.NewGuid();
+            string guidString = guid.ToString();
+            string assetFilename = string.IsNullOrEmpty(assetName) ? guidString : assetName + "Guid";
+            
+            if (AssetDatabase.IsValidFolder("Assets/UniqueIdentifierAssets") == false)
+            {
+                AssetDatabase.CreateFolder("Assets", "UniqueIdentifierAssets");
+            }
+
+            if (AssetDatabase.IsValidFolder("Assets/UniqueIdentifierAssets/IdentifierAssets") == false)
+            {
+                AssetDatabase.CreateFolder("Assets/UniqueIdentifierAssets", "IdentifierAssets");
+            }
+            
+            string uniqueAssetFilename = AssetDatabase.GenerateUniqueAssetPath("Assets/UniqueIdentifierAssets/IdentifierAssets/"+assetFilename+".asset");
+            SO_UniqueIdentifierAsset uniqueAsset = ScriptableObject.CreateInstance<SO_UniqueIdentifierAsset>();
+            uniqueAsset.Populate(guidString, "", shareable);
+
+            AssetDatabase.CreateAsset(uniqueAsset, uniqueAssetFilename);
+            AssetDatabase.SaveAssets();
+            
+            return uniqueAsset;
+        }
+        
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             SerializedProperty asset = property.FindPropertyRelative("_assetShareable");
             
             var obj = property.serializedObject.targetObject;
-            var monobehaviour = obj as MonoBehaviour;
+            var monoBehaviour = obj as MonoBehaviour;
 
-            if (IsAssetOnDisk(monobehaviour.gameObject))
+            if (IsAssetOnDisk(monoBehaviour.gameObject))
             {
                 EditorGUI.LabelField(position, "Cannot generate guid in prefab");
                 asset.objectReferenceValue = null;
@@ -65,9 +93,6 @@ namespace Scylla.CommonModules.Identification
             int indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            // Get properties
-            
-
             string contentButton = asset.objectReferenceValue == null ? "Generate" : "Delete";
             
             Rect fieldRect = new Rect(position.x, position.y, position.width - (widthButton+5), position.height);
@@ -80,7 +105,9 @@ namespace Scylla.CommonModules.Identification
             {
                 if (asset.objectReferenceValue == null)
                 {
-                    asset.objectReferenceValue = UniqueIdentifierManager.GenerateUniqueIdentifier(monobehaviour.gameObject.name);
+                    string componentName = property.serializedObject.targetObject.GetType().Name;
+                    string assetName = monoBehaviour.gameObject.name + componentName;
+                    asset.objectReferenceValue = GenerateUniqueAsset(assetName, "", false);
                 }
                 else
                 {
