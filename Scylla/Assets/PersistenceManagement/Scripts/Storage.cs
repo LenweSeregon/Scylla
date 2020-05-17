@@ -80,6 +80,7 @@
         private Dictionary<string, int> _cacheGlobalData;
         
         private string _saveName;
+        private string _pathToFolder;
         private string _pathToMetadata;
         private string _pathToSaveFile;
 
@@ -88,12 +89,13 @@
         public string PathToMetadata => _pathToMetadata;
         public string PathToSaveFile => _pathToSaveFile;
 
-        public Storage(string saveName, string pathToSaveFile, string pathToMetadata)
+        public Storage(string saveName, string pathToFolder, string pathToSaveFile, string pathToMetadata)
         {
             _cacheData = new Dictionary<string, int>();
             _cacheMetadata = new Dictionary<string, int>();
             _cacheGlobalData = new Dictionary<string, int>();
             _saveName = saveName;
+            _pathToFolder = pathToFolder;
             _pathToMetadata = pathToMetadata;
             _pathToSaveFile = pathToSaveFile;
 
@@ -102,17 +104,23 @@
             
         }
 
-        public Storage(string saveName, string pathToSaveFile)
+        public Storage(string saveName, string pathToFolder, string pathToSaveFile)
         {
             _cacheData = new Dictionary<string, int>();
             _cacheMetadata = new Dictionary<string, int>();
             _cacheGlobalData = new Dictionary<string, int>();
             _saveName = saveName;
+            _pathToFolder = pathToFolder;
             _pathToSaveFile = pathToSaveFile;
             _pathToMetadata = null;
             
             _metadata = new MetadataContainer();
             _data = new DataContainer();
+        }
+
+        public void Delete()
+        {
+            FileUtilityFactory.GetFileUtility().DeleteFolder(_pathToFolder, true);
         }
 
         public void Load()

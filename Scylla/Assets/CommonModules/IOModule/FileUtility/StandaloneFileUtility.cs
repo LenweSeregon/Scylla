@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 
 namespace Scylla.CommonModules.IOModule
@@ -48,11 +49,11 @@ namespace Scylla.CommonModules.IOModule
             }
         }
 
-        public void DeleteFolder(string folderPath)
+        public void DeleteFolder(string folderPath, bool recurse)
         {
             try
             {
-                Directory.Delete(folderPath, true);
+                Directory.Delete(folderPath, recurse);
             }
             catch (Exception e)
             {
@@ -60,6 +61,23 @@ namespace Scylla.CommonModules.IOModule
             }
         }
 
+        public void CreateFolder(string folderPath)
+        {
+            try
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("StandaloneFileUility - CreateFolder : " + folderPath + " == " + e.Message);
+            }
+        }
+
+        public List<string> GetAllFoldersInFolder(string folderPath)
+        {
+            return Directory.GetDirectories(folderPath).ToList();
+        }
+        
         public List<string> GetAllFilesInFolder(string folderPath, string searchPattern = "*.*")
         {
             List<string> files = new List<string>();

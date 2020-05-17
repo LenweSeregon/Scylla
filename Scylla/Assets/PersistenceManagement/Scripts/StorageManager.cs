@@ -1,8 +1,7 @@
-﻿using System.Globalization;
-using Scylla.CommonModules.IOModule;
-
-namespace Scylla.PersistenceManagement
+﻿namespace Scylla.PersistenceManagement
 {
+    using System.Globalization;
+    using Scylla.CommonModules.IOModule;
     using System.IO;
     using UnityEngine.SceneManagement;
 
@@ -67,7 +66,6 @@ namespace Scylla.PersistenceManagement
         private List<Storage> _storages;
         private Storage _currentStorage;
         
-        private Save _currentSave;
         private List<Storable> _storableListeners;
         private string _currentFilepath;
         #endregion
@@ -87,7 +85,7 @@ namespace Scylla.PersistenceManagement
                     (Path.Combine(Application.persistentDataPath, value));
         }
 
-        public string SaveFolderPath => Path.Combine(Application.persistentDataPath, _configuration.SaveFolderName);
+        public string GlobalSaveFolderPath => Path.Combine(Application.persistentDataPath, _configuration.SaveFolderName);
 
         #endregion
         
@@ -107,7 +105,7 @@ namespace Scylla.PersistenceManagement
             _currentStorage = null;
             
             LoadMostRecent();
-            _currentStorage.Load();
+            SyncLoad();
         }
 
         private void Start()
@@ -119,6 +117,7 @@ namespace Scylla.PersistenceManagement
 
                 Storage newStorage = CreateStorage(saveFilename);
                 _currentStorage = newStorage;
+                _currentStorage.Save();
             }
             else
             {
@@ -147,19 +146,28 @@ namespace Scylla.PersistenceManagement
             _storages = new List<Storage>();
             
             FileUtility utility = FileUtilityFactory.GetFileUtility();
-            List<string> saveFilesPaths = utility.GetAllFilesInFolder(SaveFolderPath, "*" + _configuration.SaveFileExtension);
-
-            foreach (string saveFilePath in saveFilesPaths)
+            
+            List<string> foldersSavePath = utility.GetAllFoldersInFolder(GlobalSaveFolderPath);
+            
+            foreach (string folderSave in foldersSavePath)
             {
+                List<string> saveFilesPaths = utility.GetAllFilesInFolder(folderSave, "*" + _configuration.SaveFileExtension);
+                if (saveFilesPaths.Count != 1)
+                {
+                    Debug.LogError("StorageManager == RefreshStorage -- Folder exists but there is no save in it : " + folderSave);
+                    continue;
+                }
+
+                string saveFilePath = saveFilesPaths[0];
                 string saveFilename = Path.GetFileName(saveFilePath);
                 string saveFilenameWithoutExtension = Path.GetFileNameWithoutExtension(saveFilename);
                 string saveFilenameAsMeta = saveFilenameWithoutExtension + _configuration.SaveFileMetaExtension;
-                string saveFilePathAsMeta = Path.Combine(SaveFolderPath, saveFilenameAsMeta);
+                string saveFilePathAsMeta = Path.Combine(folderSave, saveFilenameAsMeta);
 
                 _storages.Add(
                     (utility.FileExists(saveFilePathAsMeta)) ? 
-                    (new Storage(saveFilenameWithoutExtension, saveFilePath, saveFilePathAsMeta)) : 
-                    (new Storage(saveFilenameWithoutExtension, saveFilePath)));
+                    (new Storage(saveFilenameWithoutExtension, folderSave, saveFilePath, saveFilePathAsMeta)) : 
+                    (new Storage(saveFilenameWithoutExtension, folderSave, saveFilePath)));
             }
         }
 
@@ -179,6 +187,11 @@ namespace Scylla.PersistenceManagement
             SyncSave();
         }
         
+        private void OnApplicationQuit()
+        {
+            SyncSave();
+        }
+        
         #endregion
         
         //=============================================================================//
@@ -192,7 +205,7 @@ namespace Scylla.PersistenceManagement
 
             if (_storages.Count == 0)
             {
-                Debug.Log("There is no save at " + SaveFolderPath);
+                Debug.Log("There is no save at " + GlobalSaveFolderPath);
                 return null;
             }
             
@@ -272,15 +285,27 @@ namespace Scylla.PersistenceManagement
                 Debug.LogError("No more space for a new storage");
                 return null;
             }
+            
+            if (FileUtilityFactory.GetFileUtility().FolderExists(GlobalSaveFolderPath) == false)
+            {
+                FileUtilityFactory.GetFileUtility().CreateFolder(GlobalSaveFolderPath);
+            }
 
-            string filePath = Path.Combine(SaveFolderPath, saveName + _configuration.SaveFileExtension);
-            string metadataPath = Path.Combine(SaveFolderPath, saveName + _configuration.SaveFileMetaExtension);
+            string saveFolderPath = Path.Combine(GlobalSaveFolderPath, saveName);
+
+            if (FileUtilityFactory.GetFileUtility().FolderExists(saveFolderPath) == false)
+            {
+                FileUtilityFactory.GetFileUtility().CreateFolder(saveFolderPath);
+            }
+            
+            string filePath = Path.Combine(saveFolderPath, saveName + _configuration.SaveFileExtension);
+            string metadataPath = Path.Combine(saveFolderPath, saveName + _configuration.SaveFileMetaExtension);
             DateTime now = DateTime.UtcNow;
             
             Storage newStorage =
                 (_configuration.GenerateMetaFile) ? 
-                (new Storage(saveName, filePath, metadataPath)) : 
-                (new Storage(saveName, filePath));
+                (new Storage(saveName, saveFolderPath, filePath, metadataPath)) : 
+                (new Storage(saveName, saveFolderPath, filePath));
             
             newStorage.UpdateMetadata(StorageConstants.METADATA_VERSION, "1.0");
             newStorage.UpdateMetadata(StorageConstants.METADATA_CREATION, now.ToString("G", CultureInfo.InvariantCulture));

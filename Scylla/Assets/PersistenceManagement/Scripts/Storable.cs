@@ -84,7 +84,8 @@ namespace Scylla.PersistenceManagement
             foreach (AStorable storable in _storables)
             {
                 string data = storage.GetData(storable.Guid);
-                storable.Load(data);
+                if(data != null)
+                    storable.Load(data);
             }
         }
 
