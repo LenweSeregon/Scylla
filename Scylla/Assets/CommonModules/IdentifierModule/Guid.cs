@@ -15,9 +15,25 @@
     [Serializable]
     public class Guid
     {
-        [SerializeField] protected SO_UniqueIdentifierAsset _assetShareable;
-
-        public string GetGuid => _assetShareable.Guid;
-        public string GetInformation => _assetShareable.Informations;
+#if UNITY_EDITOR
+        [SerializeField] private string _guidName = null;
+#endif
+        [SerializeField] private SO_UniqueIdentifierAsset _assetShareable = null;
+        
+        public Guid(SO_UniqueIdentifierAsset asset)
+        {
+            _assetShareable = asset;
+        }
+        
+        public string GetGuid => _assetShareable == null ? null : _assetShareable.Guid;
+        public string GetInformation => _assetShareable == null ? null : _assetShareable.Informations;
+        
+#if UNITY_EDITOR
+        public void SetGuidName(string name)
+        {
+            _guidName = name;
+        }        
+#endif
+        
     }
 }

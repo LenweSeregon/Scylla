@@ -209,6 +209,30 @@
             }
         }
 
+        public void RemoveGlobalData(string key)
+        {
+            if (_cacheGlobalData.TryGetValue(key, out var index))
+            {
+                _data.globalData.RemoveAt(index);
+            }
+        }
+
+        public void RemoveData(string key)
+        {
+            if (_cacheData.TryGetValue(key, out var index))
+            {
+                _data.data.RemoveAt(index);
+            }
+        }
+
+        public void RemoveMetadata(string key)
+        {
+            if (_cacheMetadata.TryGetValue(key, out var index))
+            {
+                _metadata.metadata.RemoveAt(index);
+            }
+        }
+
         public void UpdateGlobalData(string key, string value)
         {
             if (_cacheGlobalData.TryGetValue(key, out var index))

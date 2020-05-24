@@ -8,7 +8,7 @@ namespace Scylla.PersistenceManagement.Editor
 	using UnityEngine;
 	using UnityEditor;
 
-	[CustomEditor(typeof(Storable))]
+	[CustomEditor(typeof(Storable), true)]
 	public class StorableEditor : Editor
 	{
         private Storable targetComponent;
@@ -21,10 +21,9 @@ namespace Scylla.PersistenceManagement.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-
-            var serializedObject = new SerializedObject(targetComponent);
-            var property = serializedObject.FindProperty("_storables");
-
+            
+            var property = serializedObject.FindProperty("_storableReferences");
+            
             SerializedProperty arraySizeProp = property.FindPropertyRelative("Array.size");
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -39,25 +38,22 @@ namespace Scylla.PersistenceManagement.Editor
             for (int i = 0; i < arraySize; i++)
             {
                 var subProperty = property.GetArrayElementAtIndex(i);
-                var sub = new SerializedObject(subProperty.objectReferenceValue);
-                var guid = sub.FindProperty("_guid");
-                // = subProperty.FindPropertyRelative("_guid");
+                var storable = subProperty.FindPropertyRelative("monobehaviourStorable");
+                var guid = subProperty.FindPropertyRelative("guid");
 
                 EditorGUILayout.BeginHorizontal();
                 GUI.enabled = false;
                 EditorGUIUtility.labelWidth = 25;
-                EditorGUILayout.PropertyField(subProperty, new GUIContent());
+                EditorGUILayout.PropertyField(storable, new GUIContent());
                 EditorGUIUtility.labelWidth = 0;
                 GUI.enabled = true;
 
                 EditorGUI.BeginChangeCheck();
 
-                //string identifierDrawer = EditorGUILayout.ObjectField(guid);
                 EditorGUILayout.PropertyField(guid, GUIContent.none);
                 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    //identifier.stringValue = identifierDrawer;
                     serializedObject.ApplyModifiedProperties();
 
                     EditorUtility.SetDirty(targetComponent);

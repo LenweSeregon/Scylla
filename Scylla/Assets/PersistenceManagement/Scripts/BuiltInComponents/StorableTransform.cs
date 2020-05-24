@@ -6,7 +6,7 @@
     using UnityEngine;
 
     [AddComponentMenu("Scylla/Saving/Components/Save Transform"), DisallowMultipleComponent]
-    public class StorableTransform : AStorable
+    public class StorableTransform : MonoBehaviour, IStorable
     {
         [Serializable]
         private struct Data
@@ -16,7 +16,7 @@
             public Vector3 scale;
         }
         
-        public override string Save()
+        public string Save()
         {
             Transform target = transform;
             
@@ -30,7 +30,7 @@
             return JsonUtility.ToJson(data);
         }
 
-        public override void Load(string stringData)
+        public void Load(string stringData)
         {
             Data data = JsonUtility.FromJson<Data>(stringData);
             

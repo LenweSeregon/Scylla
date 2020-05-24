@@ -8,7 +8,7 @@ namespace Scylla.PersistenceManagement
     using UnityEngine;
 
     [AddComponentMenu("Scylla/Saving/Components/StorablePosition"), DisallowMultipleComponent]
-    public class StorablePosition : AStorable
+    public class StorablePosition : MonoBehaviour, IStorable
     {
         [Serializable]
         private struct Data
@@ -16,7 +16,7 @@ namespace Scylla.PersistenceManagement
             public Vector3 position;
         }
 
-        public override string Save()
+        public string Save()
         {
             Data data = new Data()
             {
@@ -26,7 +26,7 @@ namespace Scylla.PersistenceManagement
             return JsonUtility.ToJson(data);
         }
 
-        public override void Load(string stringData)
+        public void Load(string stringData)
         {
             Data data = JsonUtility.FromJson<Data>(stringData);
             

@@ -1,4 +1,6 @@
-﻿namespace Scylla.PersistenceManagement
+﻿using System.Linq;
+
+namespace Scylla.PersistenceManagement
 {
     using System.Globalization;
     using Scylla.CommonModules.IOModule;
@@ -63,10 +65,13 @@
         //============ Non-Serialized Fields
         //=============================================================================//
         #region Non-Serialized Fields
-        private List<Storage> _storages;
-        private Storage _currentStorage;
+
+        private bool _mIsQuitting = false;
+        private Dictionary<Scene, StorageScene> _storageScenes = new Dictionary<Scene, StorageScene>();
+        private List<Storage> _storages = new List<Storage>();
+        private Storage _currentStorage = null;
         
-        private List<Storable> _storableListeners;
+        private List<PersistenceObserver> _storableListeners = new List<PersistenceObserver>();
         private string _currentFilepath;
         #endregion
         
@@ -98,7 +103,7 @@
         {
             base.Awake();
 
-            _storableListeners = new List<Storable>();
+            _storableListeners = new List<PersistenceObserver>();
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
             _currentFilepath = null;
@@ -132,6 +137,12 @@
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
+        }
+        
+        private void OnApplicationQuit()
+        {
+            _mIsQuitting = true;
+            SyncSave();
         }
 
         #endregion
@@ -186,12 +197,7 @@
         {
             SyncSave();
         }
-        
-        private void OnApplicationQuit()
-        {
-            SyncSave();
-        }
-        
+
         #endregion
         
         //=============================================================================//
@@ -267,6 +273,11 @@
             }
         }
 
+        public bool DestroyedExplicitly(GameObject gameObject)
+        {
+            return gameObject.scene.isLoaded && _mIsQuitting == false;
+        }
+
         public void SetCurrentStorage(Storage storage)
         {
             _currentStorage = storage;
@@ -316,17 +327,23 @@
             return newStorage;
         }
         
-        public void RegisterStorable(Storable storable)
+        public void RegisterStorable(PersistenceObserver storable)
         {
             if (storable != null && _currentStorage != null)
             {
                 storable.LoadRequest(_currentStorage);
             }
             _storableListeners.Add(storable);
+            
+            if (storable is StorageScene scene)
+                _storageScenes.Add(scene.gameObject.scene, scene);
         }
 
-        public void UnregisterStorable(Storable storable)
+        public void UnregisterStorable(PersistenceObserver storable)
         {
+            if (storable is StorageScene scene)
+                _storageScenes.Remove(scene.gameObject.scene);
+            
             if (_storableListeners.Remove(storable))
             {
                 if (storable != null && _currentStorage != null)
@@ -336,6 +353,25 @@
             }
         }
 
+        public void SpawnRuntimeInstance(Scene scene, RuntimeSource source, string path, string guid = null, string information = null)
+        {
+            if (_storageScenes.ContainsKey(scene) == false)
+            {
+                Debug.LogError("Trying to spawn an instance on a scene that doesn't has a StorageScene component");
+                return;
+            }
+
+            _storageScenes[scene].SpawnRuntimeInstance(source, path, guid, information);
+        }
+
+        public void WipeStorable(Storable storable)
+        {
+            if (_currentStorage != null)
+            {
+                storable.WipeRequest(_currentStorage);
+            }
+        }
+        
         public void SyncLoad()
         {
             if (_currentStorage == null)
@@ -346,7 +382,7 @@
 
             _currentStorage.LoadData();
             
-            foreach (Storable storable in _storableListeners)
+            foreach (PersistenceObserver storable in _storableListeners)
             {
                 storable.LoadRequest(_currentStorage);
             }
@@ -362,7 +398,7 @@
                 return;
             }
 
-            foreach (Storable storable in _storableListeners)
+            foreach (PersistenceObserver storable in _storableListeners)
             {
                 storable.SaveRequest(_currentStorage);
             }
