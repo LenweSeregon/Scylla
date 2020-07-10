@@ -4,6 +4,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
+    using UnityEditor;
 
     /// <summary>
     /// SceneManager is a singleton used to access SceneLoaderProxy and more generally present if we need to

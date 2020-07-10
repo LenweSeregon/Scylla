@@ -75,13 +75,18 @@ namespace Scylla.CommonModules.IOModule
 
         public List<string> GetAllFoldersInFolder(string folderPath)
         {
-            return Directory.GetDirectories(folderPath).ToList();
+            return 
+                (FolderExists(folderPath) == false) ? 
+                (new List<string>()) : 
+                (Directory.GetDirectories(folderPath).ToList());
         }
         
         public List<string> GetAllFilesInFolder(string folderPath, string searchPattern = "*.*")
         {
+            if (FolderExists(folderPath) == false)
+                return new List<string>();
+            
             List<string> files = new List<string>();
-
             DirectoryInfo directoryInfoSave = new DirectoryInfo(folderPath);
             if (directoryInfoSave.Exists)
             {

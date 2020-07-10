@@ -144,10 +144,17 @@
                 string result = operation.GetResult();
                 _data = JsonUtility.FromJson<DataContainer>(result);
 
-                for (int i = 0; i < _data.data.Count; i++)
+                for (int i = _data.data.Count - 1; i >= 0; i--)
                 {
                     DataElement element = _data.data[i];
-                    _cacheData.Add(element.guid, i);
+                    if (string.IsNullOrEmpty(element.guid) == false)
+                    {
+                        _cacheData.Add(element.guid, i);
+                    }
+                    else
+                    {
+                        _data.data.RemoveAt(i);
+                    }
                 }
             }
             catch (Exception e)
@@ -221,7 +228,8 @@
         {
             if (_cacheData.TryGetValue(key, out var index))
             {
-                _data.data.RemoveAt(index);
+                _data.data[index] = new DataElement();
+                _cacheData.Remove(key);
             }
         }
 

@@ -384,17 +384,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _guid:
     _guidName: 
-    _assetShareable: {fileID: 11400000, guid: 45ded7fa6dbeb6340a6543ad56f7c533, type: 2}
+    _assetShareable: {fileID: 0}
   _storableReferences:
   - guid:
       _guidName: StorablePosition
-      _assetShareable: {fileID: 11400000, guid: c206cde7e21253b4bbe651cd90b63a00,
-        type: 2}
+      _assetShareable: {fileID: 0}
     monobehaviourStorable: {fileID: 739378866}
   - guid:
       _guidName: StorableRotation
-      _assetShareable: {fileID: 11400000, guid: cead471487716ac49a1c7101ef6d02b6,
-        type: 2}
+      _assetShareable: {fileID: 0}
     monobehaviourStorable: {fileID: 739378869}
 --- !u!4 &739378868
 Transform:
@@ -454,7 +452,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _guid:
     _guidName: 
-    _assetShareable: {fileID: 11400000, guid: 200212f28bfe63644b37c4a5c83cb521, type: 2}
+    _assetShareable: {fileID: 11400000, guid: 94b99c9875aebc341b62cb32fae470fa, type: 2}
 --- !u!4 &1627517845
 Transform:
   m_ObjectHideFlags: 0
@@ -787,7 +785,6 @@ PrefabInstance:
         type: 3}
       propertyPath: _guid._assetShareable
       value: 
-      objectReference: {fileID: 11400000, guid: 23f7563d87ea0594580f7204a0fabd33,
-        type: 2}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cfcc0a613f70d94f80b2ddb23a7c405, type: 3}

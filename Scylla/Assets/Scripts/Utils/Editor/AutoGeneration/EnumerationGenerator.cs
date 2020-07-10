@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
-using UnityEditor;
-
-namespace Scylla.Editor
+﻿namespace Scylla.Editor
 {
+    using System;
+    using System.IO;
+    using UnityEditor;
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
